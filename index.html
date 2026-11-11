@@ -1,0 +1,1747 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AventuraGRADO 6° - Matemáticas Interactivas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --accent: #06b6d4;
+            --border-color: #cbd5e1;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            --radius: 12px;
+        }
+
+        [data-theme="dark"] {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --text-color: #f1f5f9;
+            --text-muted: #94a3b8;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --accent: #22d3ee;
+            --border-color: #334155;
+            --success: #059669;
+            --error: #dc2626;
+            --warning: #d97706;
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.4);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        button, .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+        }
+
+        button:hover, .btn:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--border-color);
+        }
+
+        .btn-tool {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: var(--text-color);
+            box-shadow: none;
+        }
+
+        .btn-tool.active-tool {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        nav.nav-tabs {
+            background-color: var(--bg-card);
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            white-space: nowrap;
+            box-shadow: none;
+        }
+
+        .tab-btn.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        main {
+            flex: 1;
+            max-width: 1150px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .view-section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1, h2, h3 {
+            margin-bottom: 0.75rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            line-height: 1.65;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* Tarjetas desplegables de Teoría */
+        .topic-accordion {
+            border-left: 5px solid var(--primary);
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .topic-header {
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .topic-header:hover {
+            background-color: rgba(79, 70, 229, 0.04);
+        }
+
+        .topic-header h3 {
+            margin: 0;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .topic-toggle-icon {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary);
+            transition: transform 0.3s ease;
+        }
+
+        .topic-accordion.open .topic-toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        .topic-body {
+            display: none;
+            padding: 0 1.5rem 1.5rem 1.5rem;
+            border-top: 1px solid var(--border-color);
+            padding-top: 1.25rem;
+        }
+
+        .topic-accordion.open .topic-body {
+            display: block;
+        }
+
+        .example-box {
+            background-color: rgba(79, 70, 229, 0.05);
+            border-left: 4px solid var(--accent);
+            padding: 1rem;
+            margin: 1rem 0 0 0;
+            border-radius: 0 var(--radius) var(--radius) 0;
+        }
+
+        /* Fracciones HTML */
+        .frac {
+            display: inline-flex;
+            flex-direction: column;
+            vertical-align: middle;
+            text-align: center;
+            font-weight: 600;
+            margin: 0 3px;
+            font-size: 0.92em;
+            line-height: 1.1;
+        }
+        .frac > span:first-child {
+            border-bottom: 1.5px solid currentColor;
+            padding: 0 4px 2px 4px;
+        }
+        .frac > span:last-child {
+            padding: 2px 4px 0 4px;
+        }
+
+        /* Laboratorio SVG */
+        .lab-container {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        @media(max-width: 768px) {
+            .lab-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .svg-canvas-wrapper {
+            background: var(--bg-main);
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 270px;
+        }
+
+        .controls-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.1rem;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        input[type="range"], input[type="text"], select {
+            padding: 0.55rem 0.75rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            color: var(--text-color);
+            font-size: 1rem;
+        }
+
+        /* Quiz & Sketch Pad */
+        .exercise-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .exercise-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .badge {
+            background-color: rgba(6, 182, 212, 0.15);
+            color: var(--primary);
+            border: 1px solid var(--accent);
+            padding: 0.25rem 0.85rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .problem-statement {
+            font-size: 1.02rem;
+            color: var(--text-color);
+            margin-bottom: 1.25rem;
+        }
+
+        .drawing-pad-container {
+            margin: 1rem 0;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        .drawing-toolbar {
+            background: var(--bg-main);
+            padding: 0.5rem;
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            flex-wrap: wrap;
+        }
+
+        .color-btn {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid #ffffff;
+            cursor: pointer;
+            box-shadow: 0 0 3px rgba(0,0,0,0.4);
+            transition: transform 0.15s;
+        }
+
+        .color-btn.active-color {
+            transform: scale(1.22);
+            outline: 2px solid var(--primary);
+        }
+
+        canvas.sketch-pad {
+            width: 100%;
+            height: 185px;
+            touch-action: none;
+            cursor: crosshair;
+            display: block;
+            background-color: #ffffff;
+        }
+
+        .answer-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .feedback {
+            margin-top: 0.85rem;
+            padding: 0.85rem 1rem;
+            border-radius: var(--radius);
+            font-weight: 600;
+            display: none;
+        }
+
+        .feedback.correct {
+            background-color: rgba(16, 185, 129, 0.12);
+            color: var(--success);
+            border: 1px solid var(--success);
+            display: block;
+        }
+
+        .feedback.incorrect {
+            background-color: rgba(239, 68, 68, 0.12);
+            color: var(--error);
+            border: 1px solid var(--error);
+            display: block;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <span>🚀</span> <span id="header-title">AventuraGRADO 6°</span>
+        </div>
+        <div class="controls">
+            <button class="btn-secondary" id="lang-toggle-btn" title="Cambiar Idioma / Switch Language">🌐 <span id="lang-label">ES</span></button>
+            <button class="btn-secondary" id="theme-toggle-btn" title="Cambiar Tema / Toggle Theme">🌓</button>
+        </div>
+    </header>
+
+    <nav class="nav-tabs">
+        <button class="tab-btn active" data-target="view-home" id="nav-home">🏠 Inicio</button>
+        <button class="tab-btn" data-target="view-theory" id="nav-theory">📚 Teoría y Ejemplos</button>
+        <button class="tab-btn" data-target="view-lab" id="nav-lab">🧪 Laboratorio SVG</button>
+        <button class="tab-btn" data-target="view-quiz" id="nav-quiz">📝 Práctica de Examen</button>
+    </nav>
+
+    <main>
+        <!-- VISTA INICIO -->
+        <section id="view-home" class="view-section active">
+            <div class="card" style="text-align: center; padding: 3rem 1.5rem;">
+                <h1 id="home-welcome">¡Te damos la bienvenida a AventuraGRADO 6°! 🌟</h1>
+                <p id="home-subtitle" style="max-width: 720px; margin: 0 auto 2rem auto; color: var(--text-muted);">
+                    Domina los fundamentos clave de matemáticas de sexto grado mediante explicaciones interactivas, simuladores visuales y retos dinámicos de aplicación.
+                </p>
+                <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+                    <button class="btn" id="to-theory-btn"><span id="btn-start-theory">Explorar Teoría</span> ➔</button>
+                    <button class="btn" id="to-quiz-btn" style="background-color: var(--accent); color: #0f172a;"><span id="btn-start-quiz">Ir a Práctica de Examen</span> 📝</button>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h3 id="feat-1-title">🎯 Ruta Curricular de 6° Grado</h3>
+                    <p id="feat-1-desc">
+                        • <strong>Tema 1:</strong> Operaciones con números enteros (+, −, ×, ÷).<br>
+                        • <strong>Tema 2:</strong> Operaciones con fracciones (+, −, ×, ÷).<br>
+                        • <strong>Tema 3:</strong> Fracción de un número.<br>
+                        • <strong>Tema 4:</strong> Jerarquía en las operaciones.
+                    </p>
+                </div>
+                <div class="card">
+                    <h3 id="feat-2-title">🎨 Lienzo Vectorial Integrado</h3>
+                    <p id="feat-2-desc">Cada ejercicio incluye una pizarra digital con pincel libre, líneas rectas, rectángulos, borrador inteligente de trazos individuales y exportación de capturas.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- VISTA TEORÍA -->
+        <section id="view-theory" class="view-section">
+            <h2 id="theory-heading">📚 Guía Teórica Interactiva - Grado 6°</h2>
+            <p id="theory-subheading" style="color: var(--text-muted);">Haz clic en cada tarjeta para desplegar las reglas fundamentales y ejemplos aplicados.</p>
+            <div id="theory-container"></div>
+        </section>
+
+        <!-- VISTA LABORATORIO SVG -->
+        <section id="view-lab" class="view-section">
+            <h2 id="lab-heading">🧪 Laboratorio Matemático Interactivo (SVG)</h2>
+            <p id="lab-subheading" style="color: var(--text-muted);">Manipula los controles deslizantes para visualizar desplazamientos enteros, fracciones de una cantidad y jerarquía operativa.</p>
+            
+            <div style="display: flex; gap: 0.75rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+                <button class="btn tab-sub-btn" data-lab="integers"><span id="lab-tab-1">Recta de Enteros</span></button>
+                <button class="btn btn-secondary tab-sub-btn" data-lab="frac-num"><span id="lab-tab-2">Fracción de un Número</span></button>
+                <button class="btn btn-secondary tab-sub-btn" data-lab="hierarchy"><span id="lab-tab-3">Jerarquía de Operaciones</span></button>
+            </div>
+
+            <!-- Sub-vista 1: Enteros -->
+            <div id="lab-integers" class="lab-sub-view card">
+                <div class="lab-container">
+                    <div class="svg-canvas-wrapper" id="integer-svg-box"></div>
+                    <div class="controls-panel">
+                        <h3 id="lab-int-title">Desplazamientos con Números Enteros</h3>
+                        <p id="lab-int-desc" style="font-size: 0.9rem; color: var(--text-muted);">Observa cómo se combinan posiciones positivas y negativas en la recta numérica.</p>
+                        <div class="control-group">
+                            <label id="label-start">Posición inicial (a): <span id="val-start">-8</span></label>
+                            <input type="range" id="input-start" min="-15" max="15" value="-8">
+                        </div>
+                        <div class="control-group">
+                            <label id="label-change">Desplazamiento (b): <span id="val-change">14</span></label>
+                            <input type="range" id="input-change" min="-20" max="20" value="14">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sub-vista 2: Fracción de un número -->
+            <div id="lab-frac-num" class="lab-sub-view card" style="display: none;">
+                <div class="lab-container">
+                    <div class="svg-canvas-wrapper" id="frac-svg-box"></div>
+                    <div class="controls-panel">
+                        <h3 id="lab-frac-title">Visualizador: Fracción de un Número</h3>
+                        <p id="lab-frac-desc" style="font-size: 0.9rem; color: var(--text-muted);">Divide un total en partes iguales (denominador) y selecciona cuántas partes tomas (numerador).</p>
+                        <div class="control-group">
+                            <label id="label-total">Cantidad Total: <span id="val-total">120</span></label>
+                            <input type="range" id="input-total" min="60" max="360" step="60" value="120">
+                        </div>
+                        <div class="control-group">
+                            <label id="label-den">Denominador (partes iguales): <span id="val-den">5</span></label>
+                            <input type="range" id="input-den" min="2" max="10" value="5">
+                        </div>
+                        <div class="control-group">
+                            <label id="label-num">Numerador (partes tomadas): <span id="val-num">3</span></label>
+                            <input type="range" id="input-num" min="1" max="5" value="3">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sub-vista 3: Jerarquía -->
+            <div id="lab-hierarchy" class="lab-sub-view card" style="display: none;">
+                <div class="lab-container">
+                    <div class="svg-canvas-wrapper" id="hier-svg-box"></div>
+                    <div class="controls-panel">
+                        <h3 id="lab-hier-title">Explorador de Jerarquía Operativa</h3>
+                        <p id="lab-hier-desc" style="font-size: 0.9rem; color: var(--text-muted);">Modifica los valores de la expresión <strong>A + B × (C − D)</strong> y observa el orden de evaluación.</p>
+                        <div class="control-group">
+                            <label>A = <span id="val-ha">10</span></label>
+                            <input type="range" id="input-ha" min="2" max="30" value="10">
+                        </div>
+                        <div class="control-group">
+                            <label>B = <span id="val-hb">4</span></label>
+                            <input type="range" id="input-hb" min="2" max="10" value="4">
+                        </div>
+                        <div class="control-group">
+                            <label>C = <span id="val-hc">9</span></label>
+                            <input type="range" id="input-hc" min="5" max="20" value="9">
+                        </div>
+                        <div class="control-group">
+                            <label>D = <span id="val-hd">3</span></label>
+                            <input type="range" id="input-hd" min="1" max="12" value="3">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VISTA PRÁCTICA DE EXAMEN -->
+        <section id="view-quiz" class="view-section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <h2 id="quiz-heading">📝 Práctica de Examen - Grado 6°</h2>
+                    <p id="quiz-subheading" style="color: var(--text-muted); margin-bottom: 0;">Analiza cada situación, plantea tu procedimiento en el lienzo e ingresa el resultado final (entero o fracción tipo a/b).</p>
+                </div>
+                <div>
+                    <button class="btn" id="new-quiz-btn">🔄 Generar Nuevos Modelos / Preguntas</button>
+                </div>
+            </div>
+
+            <div id="quiz-questions-container"></div>
+        </section>
+    </main>
+
+    <footer>
+        <p id="footer-text">AventuraGRADO 6° — Plataforma Interactiva de Matemáticas 🌟</p>
+    </footer>
+
+    <script>
+        // Formateo numérico formal con espacios como separadores de miles
+        function fmtNum(n) {
+            if (n === null || n === undefined || isNaN(n)) return n;
+            const parts = n.toString().split('.');
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+            return parts.join(',');
+        }
+
+        // Utilidad para renderizar fracciones visualmente
+        function htmlFrac(num, den) {
+            return `<span class="frac"><span>${num}</span><span>${den}</span></span>`;
+        }
+
+        function gcd(a, b) {
+            a = Math.abs(a);
+            b = Math.abs(b);
+            while (b) {
+                let t = b;
+                b = a % b;
+                a = t;
+            }
+            return a;
+        }
+
+        const translations = {
+            es: {
+                headerTitle: "AventuraGRADO 6°",
+                navHome: "🏠 Inicio",
+                navTheory: "📚 Teoría y Ejemplos",
+                navLab: "🧪 Laboratorio SVG",
+                navQuiz: "📝 Práctica de Examen",
+                homeWelcome: "¡Te damos la bienvenida a AventuraGRADO 6°! 🌟",
+                homeSubtitle: "Domina los fundamentos clave de matemáticas de sexto grado mediante explicaciones interactivas, simuladores visuales y retos dinámicos de aplicación.",
+                btnStartTheory: "Explorar Teoría",
+                btnStartQuiz: "Ir a Práctica de Examen",
+                feat1Title: "🎯 Ruta Curricular de 6° Grado",
+                feat1Desc: "• <strong>Tema 1:</strong> Operaciones con números enteros (+, −, ×, ÷).<br>• <strong>Tema 2:</strong> Operaciones con fracciones (+, −, ×, ÷).<br>• <strong>Tema 3:</strong> Fracción de un número.<br>• <strong>Tema 4:</strong> Jerarquía en las operaciones.",
+                feat2Title: "🎨 Lienzo Vectorial Integrado",
+                feat2Desc: "Cada ejercicio incluye una pizarra digital con pincel libre, líneas rectas, rectángulos, borrador inteligente de trazos individuales y exportación de capturas.",
+                theoryHeading: "📚 Guía Teórica Interactiva - Grado 6°",
+                theorySubheading: "Haz clic en cada tarjeta para desplegar las reglas fundamentales y ejemplos aplicados.",
+                labHeading: "🧪 Laboratorio Matemático Interactivo (SVG)",
+                labSubheading: "Manipula los controles deslizantes para visualizar desplazamientos enteros, fracciones de una cantidad y jerarquía operativa.",
+                labTab1: "Recta de Enteros",
+                labTab2: "Fracción de un Número",
+                labTab3: "Jerarquía de Operaciones",
+                labIntTitle: "Desplazamientos con Números Enteros",
+                labIntDesc: "Observa cómo se combinan posiciones positivas y negativas en la recta numérica.",
+                labelStart: "Posición inicial (a):",
+                labelChange: "Desplazamiento (b):",
+                labFracTitle: "Visualizador: Fracción de un Número",
+                labFracDesc: "Divide un total en partes iguales (denominador) y selecciona cuántas partes tomas (numerador).",
+                labelTotal: "Cantidad Total:",
+                labelDen: "Denominador (partes iguales):",
+                labelNum: "Numerador (partes tomadas):",
+                labHierTitle: "Explorador de Jerarquía Operativa",
+                labHierDesc: "Modifica los valores de la expresión A + B × (C − D) y observa el orden de evaluación.",
+                quizHeading: "📝 Práctica de Examen - Grado 6°",
+                quizSubheading: "Analiza cada situación, plantea tu procedimiento en el lienzo e ingresa el resultado final (entero o fracción tipo a/b).",
+                btnNewQuiz: "🔄 Generar Nuevos Modelos / Preguntas",
+                footerText: "AventuraGRADO 6° — Plataforma Interactiva de Matemáticas 🌟",
+                checkAnswer: "Comprobar respuesta",
+                newNumbers: "🔄 Nuevo Modelo",
+                copySnapshot: "📋 Copiar Captura",
+                downloadSnapshot: "💾 Descargar Imagen",
+                correctMsg: "🎉 ¡Excelente! Respuesta correcta.",
+                incorrectMsg: "❌ Respuesta incorrecta. Revisa tus cálculos en el lienzo e inténtalo nuevamente.",
+                yourAnswer: "Tu respuesta:",
+                answerPlaceholder: "Ej: -15 o 3/4",
+                topics: [
+                    {
+                        title: "Tema 1: Suma, resta, multiplicación y división de números enteros",
+                        def: "El conjunto de los números enteros (ℤ) está formado por los enteros positivos, los enteros negativos y el cero.<br><br>• <strong>Suma:</strong> Si tienen el mismo signo, se suman sus valores absolutos y se mantiene el signo. Si tienen signos diferentes, se restan sus valores absolutos y se conserva el signo del número con mayor valor absoluto.<br>• <strong>Resta:</strong> Restar un número entero equivale a sumar su opuesto: <em>a − b = a + (−b)</em>.<br>• <strong>Multiplicación y División:</strong> Se operan los valores absolutos y se aplica la ley de signos: signos iguales dan resultado positivo (+); signos diferentes dan resultado negativo (−).",
+                        ex1Title: "Ejemplo 1: Variación de temperatura en un laboratorio",
+                        ex1Text: "Una cámara frigorífica inicia a −14 °C, sube 9 °C y luego desciende 7 °C: (−14) + 9 − 7 = −5 − 7 = −12 °C.",
+                        ex2Title: "Ejemplo 2: Descenso submarino",
+                        ex2Text: "Un vehículo submarino desciende 15 metros cada minuto durante 6 minutos: (−15) × 6 = −90 metros."
+                    },
+                    {
+                        title: "Tema 2: Suma, resta, multiplicación y división de fracciones",
+                        def: "Las fracciones representan partes de una unidad (numerador sobre denominador).<br><br>• <strong>Suma y Resta:</strong> Si tienen igual denominador (homogéneas), se suman o restan los numeradores y se conserva el denominador. Si tienen distinto denominador (heterogéneas), se buscan fracciones equivalentes con un denominador común (mcm) antes de operar.<br>• <strong>Multiplicación:</strong> Se multiplican los numeradores entre sí y los denominadores entre sí.<br>• <strong>División:</strong> Se multiplica la primera fracción por el inverso multiplicativo (recíproco) de la segunda fracción.",
+                        ex1Title: "Ejemplo 1: Mezcla de ingredientes",
+                        ex1Text: `Se combinan ${htmlFrac(2, 3)} de taza de harina con ${htmlFrac(1, 4)} de taza adicional: ${htmlFrac(8, 12)} + ${htmlFrac(3, 12)} = ${htmlFrac(11, 12)} de taza.`,
+                        ex2Title: "Ejemplo 2: Reparto en recipientes",
+                        ex2Text: `Se reparten ${htmlFrac(3, 2)} litros de jugo en botellas de ${htmlFrac(1, 4)} de litro: ${htmlFrac(3, 2)} ÷ ${htmlFrac(1, 4)} = ${htmlFrac(3, 2)} × ${htmlFrac(4, 1)} = 6 botellas.`
+                    },
+                    {
+                        title: "Tema 3: Fracción de un número",
+                        def: "Calcular la fracción de una cantidad consiste en dividir dicha cantidad en el número de partes iguales que indica el denominador y tomar tantas partes como indica el numerador. Esta misma relación aplica al calcular una fracción de otra fracción.<br><br>Matemáticamente equivale a multiplicar: <strong>(a / b) × N</strong> o <strong>(a / b) × (c / d)</strong>.",
+                        ex1Title: "Ejemplo 1: Ahorro mensual",
+                        ex1Text: `De un ingreso de $ 120 000, se destinan los ${htmlFrac(3, 5)} al ahorro: (120 000 ÷ 5) × 3 = 24 000 × 3 = $ 72 000.`,
+                        ex2Title: "Ejemplo 2: Fracción de una fracción",
+                        ex2Text: `De los ${htmlFrac(3, 4)} de una parcela dedicados a cultivos, ${htmlFrac(2, 5)} corresponden a hortalizas: ${htmlFrac(3, 4)} × ${htmlFrac(2, 5)} = ${htmlFrac(6, 20)} = ${htmlFrac(3, 10)} del total de la parcela.`
+                    },
+                    {
+                        title: "Tema 4: Jerarquía en las operaciones",
+                        def: "Cuando una expresión matemática combina varias operaciones, existe un orden estricto para garantizar un único resultado correcto:<br><br><strong>1.</strong> Signos de agrupación: Paréntesis ( ), corchetes [ ] y llaves { } desde adentro hacia afuera.<br><strong>2.</strong> Potencias y raíces.<br><strong>3.</strong> Multiplicaciones y divisiones, resolviendo siempre de <strong>izquierda a derecha</strong>.<br><strong>4.</strong> Sumas y restas, resolviendo siempre de <strong>izquierda a derecha</strong>.",
+                        ex1Title: "Ejemplo 1: Expresión con paréntesis y multiplicación",
+                        ex1Text: "24 − 3 × (10 − 4) + 8 ÷ 2 = 24 − 3 × 6 + 4 = 24 − 18 + 4 = 10.",
+                        ex2Title: "Ejemplo 2: Operaciones con enteros negativos",
+                        ex2Text: "−12 + 4 × (−5) − (−18) ÷ 3 = −12 + (−20) − (−6) = −32 + 6 = −26."
+                    }
+                ]
+            },
+            en: {
+                headerTitle: "AventuraGRADO 6°",
+                navHome: "🏠 Home",
+                navTheory: "📚 Theory & Examples",
+                navLab: "🧪 SVG Lab",
+                navQuiz: "📝 Exam Practice",
+                homeWelcome: "Welcome to AventuraGRADO 6°! 🌟",
+                homeSubtitle: "Master 6th-grade mathematics fundamentals through interactive explanations, visual simulators, and dynamic application challenges.",
+                btnStartTheory: "Explore Theory",
+                btnStartQuiz: "Go to Exam Practice",
+                feat1Title: "🎯 6th Grade Curriculum Path",
+                feat1Desc: "• <strong>Topic 1:</strong> Integer operations (+, −, ×, ÷).<br>• <strong>Topic 2:</strong> Fraction operations (+, −, ×, ÷).<br>• <strong>Topic 3:</strong> Fraction of a number.<br>• <strong>Topic 4:</strong> Order of operations.",
+                feat2Title: "🎨 Built-in Vector Sketch Pad",
+                feat2Desc: "Each exercise includes a digital board with a freehand pen, straight lines, rectangles, smart individual-stroke eraser, and snapshot export.",
+                theoryHeading: "📚 Interactive Theory Guide - 6th Grade",
+                theorySubheading: "Click on each card to expand the core rules and applied examples.",
+                labHeading: "🧪 Interactive Math Lab (SVG)",
+                labSubheading: "Adjust the sliders to visualize integer shifts, fractions of a quantity, and order of operations.",
+                labTab1: "Integer Number Line",
+                labTab2: "Fraction of a Number",
+                labTab3: "Order of Operations",
+                labIntTitle: "Integer Shifts on the Number Line",
+                labIntDesc: "Observe how positive and negative positions combine along the number line.",
+                labelStart: "Starting position (a):",
+                labelChange: "Shift (b):",
+                labFracTitle: "Visualizer: Fraction of a Number",
+                labFracDesc: "Divide a total into equal parts (denominator) and select how many parts you take (numerator).",
+                labelTotal: "Total Amount:",
+                labelDen: "Denominator (equal parts):",
+                labelNum: "Numerator (parts taken):",
+                labHierTitle: "Order of Operations Explorer",
+                labHierDesc: "Change the values in the expression A + B × (C − D) and observe the evaluation sequence.",
+                quizHeading: "📝 Exam Practice - 6th Grade",
+                quizSubheading: "Analyze each situation, work out your steps on the sketch pad, and enter the final answer (integer or fraction like a/b).",
+                btnNewQuiz: "🔄 Generate New Models / Questions",
+                footerText: "AventuraGRADO 6° — Interactive Mathematics Platform 🌟",
+                checkAnswer: "Check Answer",
+                newNumbers: "🔄 New Model",
+                copySnapshot: "📋 Copy Snapshot",
+                downloadSnapshot: "💾 Download Image",
+                correctMsg: "🎉 Excellent! Correct answer.",
+                incorrectMsg: "❌ Incorrect answer. Review your work on the sketch pad and try again.",
+                yourAnswer: "Your answer:",
+                answerPlaceholder: "e.g., -15 or 3/4",
+                topics: [
+                    {
+                        title: "Topic 1: Addition, subtraction, multiplication, and division of integers",
+                        def: "The set of integers (ℤ) includes positive whole numbers, negative whole numbers, and zero.<br><br>• <strong>Addition:</strong> Same signs: add absolute values and keep the common sign. Different signs: subtract absolute values and keep the sign of the number with the greater absolute value.<br>• <strong>Subtraction:</strong> Subtracting an integer is equivalent to adding its opposite: <em>a − b = a + (−b)</em>.<br>• <strong>Multiplication & Division:</strong> Operate absolute values and apply sign rules: like signs yield positive (+); unlike signs yield negative (−).",
+                        ex1Title: "Example 1: Laboratory temperature change",
+                        ex1Text: "A cold chamber starts at −14 °C, rises 9 °C, and then drops 7 °C: (−14) + 9 − 7 = −5 − 7 = −12 °C.",
+                        ex2Title: "Example 2: Submarine descent",
+                        ex2Text: "A submarine descends 15 meters per minute for 6 minutes: (−15) × 6 = −90 meters."
+                    },
+                    {
+                        title: "Topic 2: Addition, subtraction, multiplication, and division of fractions",
+                        def: "Fractions represent parts of a whole (numerator over denominator).<br><br>• <strong>Addition & Subtraction:</strong> With like denominators, add or subtract numerators and keep the denominator. With unlike denominators, find equivalent fractions with a common denominator (LCM) first.<br>• <strong>Multiplication:</strong> Multiply numerators together and denominators together.<br>• <strong>Division:</strong> Multiply the first fraction by the reciprocal of the second fraction.",
+                        ex1Title: "Example 1: Combining ingredients",
+                        ex1Text: `Combine ${htmlFrac(2, 3)} cup of flour with ${htmlFrac(1, 4)} additional cup: ${htmlFrac(8, 12)} + ${htmlFrac(3, 12)} = ${htmlFrac(11, 12)} cup.`,
+                        ex2Title: "Example 2: Filling containers",
+                        ex2Text: `Divide ${htmlFrac(3, 2)} liters of juice into ${htmlFrac(1, 4)}-liter bottles: ${htmlFrac(3, 2)} ÷ ${htmlFrac(1, 4)} = ${htmlFrac(3, 2)} × ${htmlFrac(4, 1)} = 6 bottles.`
+                    },
+                    {
+                        title: "Topic 3: Fraction of a number",
+                        def: "Finding a fraction of a quantity means dividing that quantity into the number of equal parts indicated by the denominator and taking as many parts as indicated by the numerator. The same relationship applies when finding a fraction of another fraction.<br><br>Mathematically: <strong>(a / b) × N</strong> or <strong>(a / b) × (c / d)</strong>.",
+                        ex1Title: "Example 1: Monthly savings",
+                        ex1Text: `Out of an income of $ 120 000, ${htmlFrac(3, 5)} goes to savings: (120 000 ÷ 5) × 3 = 24 000 × 3 = $ 72 000.`,
+                        ex2Title: "Example 2: Fraction of a fraction",
+                        ex2Text: `Out of ${htmlFrac(3, 4)} of a plot dedicated to crops, ${htmlFrac(2, 5)} are vegetables: ${htmlFrac(3, 4)} × ${htmlFrac(2, 5)} = ${htmlFrac(6, 20)} = ${htmlFrac(3, 10)} of the whole plot.`
+                    },
+                    {
+                        title: "Topic 4: Order of operations",
+                        def: "When an expression combines multiple operations, follow this strict sequence:<br><br><strong>1.</strong> Grouping symbols: Parentheses ( ), brackets [ ], and braces { } from innermost to outermost.<br><strong>2.</strong> Exponents and roots.<br><strong>3.</strong> Multiplication and division, working strictly from <strong>left to right</strong>.<br><strong>4.</strong> Addition and subtraction, working strictly from <strong>left to right</strong>.",
+                        ex1Title: "Example 1: Expression with parentheses and multiplication",
+                        ex1Text: "24 − 3 × (10 − 4) + 8 ÷ 2 = 24 − 3 × 6 + 4 = 24 − 18 + 4 = 10.",
+                        ex2Title: "Example 2: Operations with negative integers",
+                        ex2Text: "−12 + 4 × (−5) − (−18) ÷ 3 = −12 + (−20) − (−6) = −32 + 6 = −26."
+                    }
+                ]
+            }
+        };
+
+        let currentLang = localStorage.getItem('math6_lang') || 'es';
+        let currentTheme = localStorage.getItem('math6_theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+
+        document.documentElement.setAttribute('data-theme', currentTheme);
+
+        function t(key) {
+            return translations[currentLang][key] || key;
+        }
+
+        function updateUI() {
+            document.documentElement.lang = currentLang;
+            document.getElementById('header-title').textContent = t('headerTitle');
+            document.getElementById('lang-label').textContent = currentLang.toUpperCase();
+            document.getElementById('nav-home').textContent = t('navHome');
+            document.getElementById('nav-theory').textContent = t('navTheory');
+            document.getElementById('nav-lab').textContent = t('navLab');
+            document.getElementById('nav-quiz').textContent = t('navQuiz');
+
+            document.getElementById('home-welcome').textContent = t('homeWelcome');
+            document.getElementById('home-subtitle').textContent = t('homeSubtitle');
+            document.getElementById('btn-start-theory').textContent = t('btnStartTheory');
+            document.getElementById('btn-start-quiz').textContent = t('btnStartQuiz');
+            document.getElementById('feat-1-title').textContent = t('feat1Title');
+            document.getElementById('feat-1-desc').innerHTML = t('feat1Desc');
+            document.getElementById('feat-2-title').textContent = t('feat2Title');
+            document.getElementById('feat-2-desc').textContent = t('feat2Desc');
+
+            document.getElementById('theory-heading').textContent = t('theoryHeading');
+            document.getElementById('theory-subheading').textContent = t('theorySubheading');
+
+            document.getElementById('lab-heading').textContent = t('labHeading');
+            document.getElementById('lab-subheading').textContent = t('labSubheading');
+            document.getElementById('lab-tab-1').textContent = t('labTab1');
+            document.getElementById('lab-tab-2').textContent = t('labTab2');
+            document.getElementById('lab-tab-3').textContent = t('labTab3');
+            document.getElementById('lab-int-title').textContent = t('labIntTitle');
+            document.getElementById('lab-int-desc').textContent = t('labIntDesc');
+            document.getElementById('label-start').childNodes[0].nodeValue = t('labelStart') + " ";
+            document.getElementById('label-change').childNodes[0].nodeValue = t('labelChange') + " ";
+            document.getElementById('lab-frac-title').textContent = t('labFracTitle');
+            document.getElementById('lab-frac-desc').textContent = t('labFracDesc');
+            document.getElementById('label-total').childNodes[0].nodeValue = t('labelTotal') + " ";
+            document.getElementById('label-den').childNodes[0].nodeValue = t('labelDen') + " ";
+            document.getElementById('label-num').childNodes[0].nodeValue = t('labelNum') + " ";
+            document.getElementById('lab-hier-title').textContent = t('labHierTitle');
+            document.getElementById('lab-hier-desc').textContent = t('labHierDesc');
+
+            document.getElementById('quiz-heading').textContent = t('quizHeading');
+            document.getElementById('quiz-subheading').textContent = t('quizSubheading');
+            document.getElementById('new-quiz-btn').textContent = t('btnNewQuiz');
+            document.getElementById('footer-text').textContent = t('footerText');
+
+            renderTheoryCards();
+        }
+
+        function renderTheoryCards() {
+            const container = document.getElementById('theory-container');
+            const topics = translations[currentLang].topics;
+            container.innerHTML = topics.map((tp, idx) => `
+                <div class="card topic-accordion ${idx === 0 ? 'open' : ''}">
+                    <div class="topic-header">
+                        <h3>${tp.title}</h3>
+                        <span class="topic-toggle-icon">▼</span>
+                    </div>
+                    <div class="topic-body">
+                        <p>${tp.def}</p>
+                        <div class="example-box">
+                            <strong>${tp.ex1Title}</strong>
+                            <p style="margin-top: 6px; margin-bottom: 0;">${tp.ex1Text}</p>
+                        </div>
+                        <div class="example-box" style="border-left-color: var(--primary);">
+                            <strong>${tp.ex2Title}</strong>
+                            <p style="margin-top: 6px; margin-bottom: 0;">${tp.ex2Text}</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            container.querySelectorAll('.topic-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    header.parentElement.classList.toggle('open');
+                });
+            });
+        }
+
+        // Navegación principal
+        function switchTab(viewId) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            const target = document.getElementById(viewId);
+            if (target) target.classList.add('active');
+            
+            const btnMap = { 'view-home': 'nav-home', 'view-theory': 'nav-theory', 'view-lab': 'nav-lab', 'view-quiz': 'nav-quiz' };
+            const activeBtn = document.getElementById(btnMap[viewId]);
+            if (activeBtn) activeBtn.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => switchTab(btn.getAttribute('data-target')));
+        });
+
+        document.getElementById('to-theory-btn').addEventListener('click', () => switchTab('view-theory'));
+        document.getElementById('to-quiz-btn').addEventListener('click', () => switchTab('view-quiz'));
+
+        // Sub-pestañas del laboratorio SVG
+        document.querySelectorAll('.tab-sub-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const sub = btn.getAttribute('data-lab');
+                document.querySelectorAll('.lab-sub-view').forEach(el => el.style.display = 'none');
+                document.querySelectorAll('.tab-sub-btn').forEach(b => b.classList.add('btn-secondary'));
+                btn.classList.remove('btn-secondary');
+                const labView = document.getElementById('lab-' + sub);
+                if (labView) labView.style.display = 'block';
+            });
+        });
+
+        // Controles globales
+        document.getElementById('lang-toggle-btn').addEventListener('click', () => {
+            currentLang = currentLang === 'en' ? 'es' : 'en';
+            localStorage.setItem('math6_lang', currentLang);
+            updateUI();
+            updateLabIntegers();
+            updateLabFracNum();
+            updateLabHierarchy();
+            initQuiz();
+        });
+
+        document.getElementById('theme-toggle-btn').addEventListener('click', () => {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            localStorage.setItem('math6_theme', currentTheme);
+            document.documentElement.setAttribute('data-theme', currentTheme);
+        });
+
+        document.getElementById('new-quiz-btn').addEventListener('click', () => initQuiz());
+
+        // ==========================================
+        // LABORATORIO SVG 1: RECTA DE ENTEROS
+        // ==========================================
+        function updateLabIntegers() {
+            const start = parseInt(document.getElementById('input-start').value);
+            const change = parseInt(document.getElementById('input-change').value);
+            const finalVal = start + change;
+            document.getElementById('val-start').textContent = start;
+            document.getElementById('val-change').textContent = change >= 0 ? `+${change}` : change;
+
+            const box = document.getElementById('integer-svg-box');
+            const scale = 7.5;
+            const centerX = 180;
+
+            let svg = `<svg viewBox="0 0 360 155" width="100%" height="100%" style="max-width: 380px;">`;
+            svg += `<defs>
+                <marker id="arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 1 L 10 5 L 0 9 z" fill="var(--primary)"/>
+                </marker>
+            </defs>`;
+            svg += `<line x1="15" y1="95" x2="345" y2="95" stroke="var(--text-color)" stroke-width="2.5" stroke-linecap="round"/>`;
+            
+            for (let v = -20; v <= 20; v += 5) {
+                const cx = centerX + (v * scale);
+                svg += `<line x1="${cx}" y1="88" x2="${cx}" y2="102" stroke="var(--text-muted)" stroke-width="${v === 0 ? 2.5 : 1.5}"/>`;
+                svg += `<text x="${cx}" y="118" font-size="10" font-weight="${v === 0 ? 'bold' : 'normal'}" fill="var(--text-color)" text-anchor="middle">${v}</text>`;
+            }
+
+            const x1 = Math.min(Math.max(centerX + start * scale, 20), 340);
+            const x2 = Math.min(Math.max(centerX + finalVal * scale, 20), 340);
+            const midX = (x1 + x2) / 2;
+            const arcY = 95 - Math.min(Math.abs(change) * 2.2 + 15, 65);
+
+            if (change !== 0) {
+                svg += `<path d="M ${x1} 86 Q ${midX} ${arcY} ${x2} 84" fill="none" stroke="var(--primary)" stroke-width="2.5" stroke-dasharray="4 2" marker-end="url(#arrow)"/>`;
+                svg += `<text x="${midX}" y="${arcY - 4}" font-size="11" font-weight="bold" fill="var(--primary)" text-anchor="middle">${change > 0 ? '+' + change : change}</text>`;
+            }
+
+            svg += `<circle cx="${x1}" cy="95" r="6" fill="var(--accent)" />`;
+            svg += `<circle cx="${x2}" cy="95" r="7.5" fill="var(--success)" />`;
+            svg += `</svg>`;
+
+            const opStr = change >= 0 ? `(${start}) + ${change} = ${finalVal}` : `(${start}) + (${change}) = ${finalVal}`;
+            box.innerHTML = svg + `<p style="margin-top:8px; font-weight:700; font-size:1.05rem; margin-bottom:0;">${opStr}</p>`;
+        }
+
+        document.getElementById('input-start').addEventListener('input', updateLabIntegers);
+        document.getElementById('input-change').addEventListener('input', updateLabIntegers);
+
+        // ==========================================
+        // LABORATORIO SVG 2: FRACCIÓN DE UN NÚMERO
+        // ==========================================
+        function updateLabFracNum() {
+            const total = parseInt(document.getElementById('input-total').value);
+            const den = parseInt(document.getElementById('input-den').value);
+            const numInput = document.getElementById('input-num');
+            numInput.max = den;
+            if (parseInt(numInput.value) > den) numInput.value = den;
+            const num = parseInt(numInput.value);
+
+            document.getElementById('val-total').textContent = fmtNum(total);
+            document.getElementById('val-den').textContent = den;
+            document.getElementById('val-num').textContent = num;
+
+            const partVal = total / den;
+            const resultVal = partVal * num;
+
+            const box = document.getElementById('frac-svg-box');
+            const barWidth = 300;
+            const barHeight = 56;
+            const startX = 20;
+            const startY = 45;
+            const segmentW = barWidth / den;
+
+            let svg = `<svg viewBox="0 0 340 135" width="100%" height="100%" style="max-width: 360px;">`;
+            svg += `<text x="170" y="25" font-size="12" font-weight="bold" fill="var(--text-color)" text-anchor="middle">Total = ${fmtNum(total)}</text>`;
+
+            for (let i = 0; i < den; i++) {
+                const x = startX + i * segmentW;
+                const isSelected = i < num;
+                svg += `<rect x="${x}" y="${startY}" width="${segmentW}" height="${barHeight}" fill="${isSelected ? 'var(--primary)' : 'var(--bg-card)'}" stroke="var(--text-color)" stroke-width="1.5"/>`;
+                if (den <= 8) {
+                    svg += `<text x="${x + segmentW/2}" y="${startY + barHeight/2 + 4}" font-size="11" font-weight="bold" fill="${isSelected ? '#ffffff' : 'var(--text-color)'}" text-anchor="middle">${fmtNum(partVal)}</text>`;
+                }
+            }
+            svg += `</svg>`;
+
+            const labelText = currentLang === 'es'
+                ? `${num}/${den} de ${fmtNum(total)} = ${fmtNum(resultVal)}`
+                : `${num}/${den} of ${fmtNum(total)} = ${fmtNum(resultVal)}`;
+
+            box.innerHTML = svg + `<p style="margin-top:6px; font-weight:700; font-size:1.05rem; margin-bottom:0;">${labelText}</p>`;
+        }
+
+        document.getElementById('input-total').addEventListener('input', updateLabFracNum);
+        document.getElementById('input-den').addEventListener('input', updateLabFracNum);
+        document.getElementById('input-num').addEventListener('input', updateLabFracNum);
+
+        // ==========================================
+        // LABORATORIO SVG 3: JERARQUÍA OPERATIVA
+        // ==========================================
+        function updateLabHierarchy() {
+            const a = parseInt(document.getElementById('input-ha').value);
+            const b = parseInt(document.getElementById('input-hb').value);
+            const c = parseInt(document.getElementById('input-hc').value);
+            const d = parseInt(document.getElementById('input-hd').value);
+
+            document.getElementById('val-ha').textContent = a;
+            document.getElementById('val-hb').textContent = b;
+            document.getElementById('val-hc').textContent = c;
+            document.getElementById('val-hd').textContent = d;
+
+            const step1 = c - d;
+            const step2 = b * step1;
+            const finalRes = a + step2;
+
+            const box = document.getElementById('hier-svg-box');
+            const p1Title = currentLang === 'es' ? '1° Paréntesis:' : '1st Parentheses:';
+            const p2Title = currentLang === 'es' ? '2° Multiplicación:' : '2nd Multiplication:';
+            const p3Title = currentLang === 'es' ? '3° Suma final:' : '3rd Final Addition:';
+
+            box.innerHTML = `
+                <svg viewBox="0 0 340 165" width="100%" height="100%" style="max-width: 360px;">
+                    <rect x="10" y="8" width="320" height="36" rx="8" fill="var(--bg-card)" stroke="var(--primary)" stroke-width="1.5"/>
+                    <text x="170" y="31" font-size="15" font-weight="bold" fill="var(--text-color)" text-anchor="middle">${a} + ${b} × (${c} − ${d})</text>
+                    
+                    <text x="20" y="68" font-size="12" font-weight="bold" fill="var(--accent)">${p1Title}</text>
+                    <text x="155" y="68" font-size="13" fill="var(--text-color)">${a} + ${b} × (${step1})</text>
+                    
+                    <text x="20" y="98" font-size="12" font-weight="bold" fill="var(--primary)">${p2Title}</text>
+                    <text x="155" y="98" font-size="13" fill="var(--text-color)">${a} + (${step2})</text>
+                    
+                    <rect x="10" y="115" width="320" height="38" rx="8" fill="rgba(16, 185, 129, 0.15)" stroke="var(--success)" stroke-width="1.5"/>
+                    <text x="170" y="139" font-size="15" font-weight="bold" fill="var(--success)" text-anchor="middle">${p3Title} ${fmtNum(finalRes)}</text>
+                </svg>
+            `;
+        }
+
+        ['input-ha', 'input-hb', 'input-hc', 'input-hd'].forEach(id => {
+            document.getElementById(id).addEventListener('input', updateLabHierarchy);
+        });
+
+        // ==========================================
+        // LIENZO DE DIBUJO VECTORIAL CON BORRADOR DE TRAZOS
+        // ==========================================
+        function initDrawingPad(canvas) {
+            const ctx = canvas.getContext('2d');
+            let isDrawing = false;
+            let startX = 0, startY = 0;
+            let currentTool = 'pen';
+            let currentColor = '#1e293b';
+            let currentWidth = 3;
+            let strokes = [];
+
+            const wrapper = canvas.parentElement;
+            const toolbar = wrapper.querySelector('.drawing-toolbar');
+            
+            function redraw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                strokes.forEach(s => {
+                    ctx.save();
+                    ctx.strokeStyle = s.color;
+                    ctx.fillStyle = s.color;
+                    ctx.lineWidth = s.width;
+                    ctx.lineCap = 'round';
+                    ctx.lineJoin = 'round';
+
+                    if (s.type === 'pen') {
+                        if (s.points && s.points.length > 1) {
+                            ctx.beginPath();
+                            ctx.moveTo(s.points[0].x, s.points[0].y);
+                            for (let i = 1; i < s.points.length; i++) {
+                                ctx.lineTo(s.points[i].x, s.points[i].y);
+                            }
+                            ctx.stroke();
+                        } else if (s.points && s.points.length === 1) {
+                            ctx.beginPath();
+                            ctx.arc(s.points[0].x, s.points[0].y, s.width / 2, 0, Math.PI * 2);
+                            ctx.fill();
+                        }
+                    } else if (s.type === 'line') {
+                        ctx.beginPath();
+                        ctx.moveTo(s.x1, s.y1);
+                        ctx.lineTo(s.x2, s.y2);
+                        ctx.stroke();
+                    } else if (s.type === 'rect') {
+                        ctx.strokeRect(s.x, s.y, s.w, s.h);
+                    }
+                    ctx.restore();
+                });
+            }
+
+            toolbar.innerHTML = `
+                <button type="button" class="btn-tool active-tool" data-tool="pen" title="Pincel libre">✏️</button>
+                <button type="button" class="btn-tool" data-tool="line" title="Línea recta">📏</button>
+                <button type="button" class="btn-tool" data-tool="rect" title="Rectángulo">⬛</button>
+                <button type="button" class="btn-tool" data-tool="eraser" title="Borrador de trazos">🧹</button>
+                <div class="color-btn active-color" style="background:#1e293b;" data-color="#1e293b"></div>
+                <div class="color-btn" style="background:#4f46e5;" data-color="#4f46e5"></div>
+                <div class="color-btn" style="background:#06b6d4;" data-color="#06b6d4"></div>
+                <div class="color-btn" style="background:#ef4444;" data-color="#ef4444"></div>
+                <div class="color-btn" style="background:#10b981;" data-color="#10b981"></div>
+                <button type="button" class="btn-secondary" style="padding:2px 7px; font-size:0.75rem; box-shadow:none;" data-width="2">•</button>
+                <button type="button" class="btn-secondary" style="padding:2px 7px; font-size:0.85rem; font-weight:bold; box-shadow:none;" data-width="5">●</button>
+                <button type="button" class="btn-secondary" style="padding:2px 7px; font-size:0.8rem; box-shadow:none;" data-action="clear" title="Limpiar lienzo">🗑️</button>
+                <button type="button" class="btn" style="padding:3px 8px; font-size:0.72rem; margin-left:auto;" data-action="copy">${t('copySnapshot')}</button>
+                <button type="button" class="btn" style="padding:3px 8px; font-size:0.72rem;" data-action="download">${t('downloadSnapshot')}</button>
+            `;
+
+            toolbar.querySelectorAll('[data-tool]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    currentTool = btn.getAttribute('data-tool');
+                    toolbar.querySelectorAll('[data-tool]').forEach(b => b.classList.remove('active-tool'));
+                    btn.classList.add('active-tool');
+                    canvas.style.cursor = currentTool === 'eraser' ? 'cell' : 'crosshair';
+                });
+            });
+
+            toolbar.querySelectorAll('[data-color]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    currentColor = btn.getAttribute('data-color');
+                    toolbar.querySelectorAll('[data-color]').forEach(b => b.classList.remove('active-color'));
+                    btn.classList.add('active-color');
+                });
+            });
+
+            toolbar.querySelectorAll('[data-width]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    currentWidth = parseInt(btn.getAttribute('data-width'));
+                });
+            });
+
+            toolbar.querySelectorAll('[data-action]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const action = btn.getAttribute('data-action');
+                    if (action === 'clear') {
+                        strokes = [];
+                        redraw();
+                    } else if (action === 'copy' || action === 'download') {
+                        captureExerciseCard(btn, action);
+                    }
+                });
+            });
+
+            function getPos(e) {
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = canvas.width / rect.width;
+                const scaleY = canvas.height / rect.height;
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                return {
+                    x: (clientX - rect.left) * scaleX,
+                    y: (clientY - rect.top) * scaleY
+                };
+            }
+
+            function distanceToSegment(p, a, b) {
+                const l2 = (b.x - a.x)**2 + (b.y - a.y)**2;
+                if (l2 === 0) return Math.hypot(p.x - a.x, p.y - a.y);
+                let tParam = ((p.x - a.x) * (b.x - a.x) + (p.y - a.y) * (b.y - a.y)) / l2;
+                tParam = Math.max(0, Math.min(1, tParam));
+                return Math.hypot(p.x - (a.x + tParam * (b.x - a.x)), p.y - (a.y + tParam * (b.y - a.y)));
+            }
+
+            function hitTestStroke(pos, s) {
+                const tolerance = Math.max(s.width + 6, 12);
+                if (s.type === 'pen') {
+                    if (s.points.length === 1) {
+                        return Math.hypot(pos.x - s.points[0].x, pos.y - s.points[0].y) < tolerance;
+                    }
+                    for (let i = 0; i < s.points.length - 1; i++) {
+                        if (distanceToSegment(pos, s.points[i], s.points[i+1]) < tolerance) return true;
+                    }
+                } else if (s.type === 'line') {
+                    if (distanceToSegment(pos, {x: s.x1, y: s.y1}, {x: s.x2, y: s.y2}) < tolerance) return true;
+                } else if (s.type === 'rect') {
+                    const p1 = {x: s.x, y: s.y}, p2 = {x: s.x + s.w, y: s.y};
+                    const p3 = {x: s.x + s.w, y: s.y + s.h}, p4 = {x: s.x, y: s.y + s.h};
+                    if (distanceToSegment(pos, p1, p2) < tolerance ||
+                        distanceToSegment(pos, p2, p3) < tolerance ||
+                        distanceToSegment(pos, p3, p4) < tolerance ||
+                        distanceToSegment(pos, p4, p1) < tolerance) return true;
+                }
+                return false;
+            }
+
+            canvas.addEventListener('pointerdown', (e) => {
+                isDrawing = true;
+                const pos = getPos(e);
+                startX = pos.x;
+                startY = pos.y;
+
+                if (currentTool === 'pen') {
+                    strokes.push({
+                        type: 'pen',
+                        color: currentColor,
+                        width: currentWidth,
+                        points: [pos]
+                    });
+                    redraw();
+                } else if (currentTool === 'eraser') {
+                    strokes = strokes.filter(s => !hitTestStroke(pos, s));
+                    redraw();
+                }
+            });
+
+            canvas.addEventListener('pointermove', (e) => {
+                if (!isDrawing) return;
+                const pos = getPos(e);
+
+                if (currentTool === 'pen') {
+                    const currentStroke = strokes[strokes.length - 1];
+                    if (currentStroke) {
+                        currentStroke.points.push(pos);
+                        redraw();
+                    }
+                } else if (currentTool === 'line') {
+                    redraw();
+                    ctx.save();
+                    ctx.strokeStyle = currentColor;
+                    ctx.lineWidth = currentWidth;
+                    ctx.lineCap = 'round';
+                    ctx.beginPath();
+                    ctx.moveTo(startX, startY);
+                    ctx.lineTo(pos.x, pos.y);
+                    ctx.stroke();
+                    ctx.restore();
+                } else if (currentTool === 'rect') {
+                    redraw();
+                    ctx.save();
+                    ctx.strokeStyle = currentColor;
+                    ctx.lineWidth = currentWidth;
+                    ctx.strokeRect(startX, startY, pos.x - startX, pos.y - startY);
+                    ctx.restore();
+                } else if (currentTool === 'eraser') {
+                    strokes = strokes.filter(s => !hitTestStroke(pos, s));
+                    redraw();
+                }
+            });
+
+            window.addEventListener('pointerup', (e) => {
+                if (!isDrawing) return;
+                isDrawing = false;
+                const pos = getPos(e);
+
+                if (currentTool === 'line') {
+                    strokes.push({
+                        type: 'line',
+                        color: currentColor,
+                        width: currentWidth,
+                        x1: startX,
+                        y1: startY,
+                        x2: pos.x,
+                        y2: pos.y
+                    });
+                    redraw();
+                } else if (currentTool === 'rect') {
+                    strokes.push({
+                        type: 'rect',
+                        color: currentColor,
+                        width: currentWidth,
+                        x: startX,
+                        y: startY,
+                        w: pos.x - startX,
+                        h: pos.y - startY
+                    });
+                    redraw();
+                }
+            });
+        }
+
+        async function captureExerciseCard(btn, actionType) {
+            const card = btn.closest('.exercise-card');
+            const buttons = card.querySelectorAll('button');
+            try {
+                buttons.forEach(b => b.style.visibility = 'hidden');
+                const canvas = await html2canvas(card, {
+                    scale: 2,
+                    useCORS: true,
+                    backgroundColor: getComputedStyle(document.body).getPropertyValue('--bg-card')
+                });
+                buttons.forEach(b => b.style.visibility = 'visible');
+
+                canvas.toBlob(async (pngBlob) => {
+                    if (actionType === 'copy') {
+                        try {
+                            await navigator.clipboard.write([new ClipboardItem({ 'image/png': pngBlob })]);
+                            alert(currentLang === 'es' ? '¡Captura copiada al portapapeles! 📋' : 'Snapshot copied to clipboard! 📋');
+                        } catch (e) {
+                            downloadBlob(pngBlob);
+                        }
+                    } else {
+                        downloadBlob(pngBlob);
+                    }
+                }, 'image/png');
+            } catch (err) {
+                buttons.forEach(b => b.style.visibility = 'visible');
+                alert('Error: ' + err);
+            }
+        }
+
+        function downloadBlob(blob) {
+            const link = document.createElement('a');
+            link.download = 'aventura-grado6-ejercicio.png';
+            link.href = URL.createObjectURL(blob);
+            link.click();
+        }
+
+        // ==========================================
+        // MOTOR GENERADOR DE PROBLEMAS MULTI-MODELO
+        // (SIN PISTAS NI SUGERENCIAS DE PROCEDIMIENTO)
+        // ==========================================
+        function randInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        // Evaluador flexible: acepta enteros, decimales y fracciones (ej. "3/4", "-5/2")
+        function parseMathInput(raw) {
+            if (!raw) return NaN;
+            const clean = raw.trim().replace(/\s+/g, '').replace(',', '.');
+            if (clean.includes('/')) {
+                const parts = clean.split('/');
+                if (parts.length !== 2) return NaN;
+                const num = parseFloat(parts[0]);
+                const den = parseFloat(parts[1]);
+                if (isNaN(num) || isNaN(den) || den === 0) return NaN;
+                return num / den;
+            }
+            return parseFloat(clean);
+        }
+
+        function generateQuestionForTopic(topicIndex, preferredModel = null) {
+            const isEs = currentLang === 'es';
+
+            // TEMA 1: Suma, resta, multiplicación y división de números enteros (5 modelos)
+            if (topicIndex === 0) {
+                const model = preferredModel || randInt(1, 5);
+                const topicLabel = isEs ? 'Tema 1: Números Enteros' : 'Topic 1: Integers';
+                if (model === 1) {
+                    const t0 = -randInt(6, 18);
+                    const up = randInt(10, 24);
+                    const down = randInt(8, 22);
+                    const ans = t0 + up - down;
+                    return {
+                        topic: topicLabel,
+                        text: isEs
+                            ? `Una cámara de conservación inicia el día a <strong>${t0} °C</strong>. Al mediodía la temperatura registra un aumento de <strong>${up} °C</strong> y en la noche desciende <strong>${down} °C</strong>. ¿Cuál es la temperatura final en °C?`
+                            : `A cold storage room starts the day at <strong>${t0} °C</strong>. At noon the temperature rises by <strong>${up} °C</strong> and at night it drops by <strong>${down} °C</strong>. What is the final temperature in °C?`,
+                        answerVal: ans,
+                        displayAns: `${ans}`
+                    };
+                } else if (model === 2) {
+                    const rate = randInt(12, 28);
+                    const mins = randInt(6, 14);
+                    const ans = -rate * mins;
+                    return {
+                        topic: topicLabel,
+                        text: isEs
+                            ? `Un dron submarino parte desde la superficie (0 m) y desciende verticalmente <strong>${rate} metros</strong> por cada minuto. ¿Qué número entero representa su posición respecto al nivel del mar tras <strong>${mins} minutos</strong>?`
+                            : `An underwater drone starts at the surface (0 m) and descends vertically <strong>${rate} meters</strong> every minute. What integer represents its position relative to sea level after <strong>${mins} minutes</strong>?`,
+                        answerVal: ans,
+                        displayAns: `${ans}`
+                    };
+                } else if (model === 3) {
+                    const quotient = -randInt(4, 15);
+                    const divisor = randInt(5, 12);
+                    const totalLoss = quotient * divisor;
+                    return {
+                        topic: topicLabel,
+                        text: isEs
+                            ? `Durante <strong>${divisor} días</strong> consecutivos, una empresa registró un balance total de <strong>${fmtNum(totalLoss)} dólares</strong> con pérdidas iguales cada día. ¿Qué número entero representa el balance diario?`
+                            : `Over <strong>${divisor} consecutive days</strong>, a company recorded a total balance of <strong>${fmtNum(totalLoss)} dollars</strong> with equal losses each day. What integer represents the daily balance?`,
+                        answerVal: quotient,
+                        displayAns: `${quotient}`
+                    };
+                } else if (model === 4) {
+                    // Nuevo modelo: Suma y resta de más de 2 enteros (4 variaciones en cadena)
+                    const startDepth = -randInt(15, 35);
+                    const climb1 = randInt(8, 20);
+                    const dive2 = randInt(12, 28);
+                    const climb3 = randInt(5, 18);
+                    const dive4 = randInt(6, 16);
+                    const ans = startDepth + climb1 - dive2 + climb3 - dive4;
+                    return {
+                        topic: topicLabel,
+                        text: isEs
+                            ? `Un buzo se encuentra a <strong>${Math.abs(startDepth)} metros bajo el nivel del mar</strong> (${startDepth} m). Primero asciende <strong>${climb1} m</strong>, luego desciende <strong>${dive2} m</strong>, después vuelve a subir <strong>${climb3} m</strong> y finalmente desciende <strong>${dive4} m</strong>. ¿Qué número entero representa su profundidad final en metros?`
+                            : `A diver is at <strong>${Math.abs(startDepth)} meters below sea level</strong> (${startDepth} m). First, the diver ascends <strong>${climb1} m</strong>, then descends <strong>${dive2} m</strong>, rises again by <strong>${climb3} m</strong>, and finally descends <strong>${dive4} m</strong>. What integer represents the final depth in meters?`,
+                        answerVal: ans,
+                        displayAns: `${ans}`
+                    };
+                } else {
+                    // Nuevo modelo: Expresión o movimientos múltiples con 4 o 5 enteros
+                    const m1 = -randInt(10, 25);
+                    const m2 = randInt(14, 30);
+                    const m3 = -randInt(8, 20);
+                    const m4 = -randInt(5, 15);
+                    const m5 = randInt(6, 18);
+                    const ans = m1 + m2 + m3 + m4 + m5;
+                    return {
+                        topic: topicLabel,
+                        text: isEs
+                            ? `En un juego de estrategia, un jugador registra los siguientes puntajes en cinco rondas consecutivas: <strong>${m1}</strong>, <strong>+${m2}</strong>, <strong>${m3}</strong>, <strong>${m4}</strong> y <strong>+${m5}</strong> puntos. ¿Cuál es su puntaje total al finalizar las cinco rondas?`
+                            : `In a strategy game, a player records the following scores across five consecutive rounds: <strong>${m1}</strong>, <strong>+${m2}</strong>, <strong>${m3}</strong>, <strong>${m4}</strong>, and <strong>+${m5}</strong> points. What is the total score at the end of the five rounds?`,
+                        answerVal: ans,
+                        displayAns: `${ans}`
+                    };
+                }
+            }
+
+            // TEMA 2: Suma, resta, multiplicación y división de fracciones (5 modelos)
+            if (topicIndex === 1) {
+                const model = preferredModel || randInt(1, 5);
+                const topicLabel = isEs ? 'Tema 2: Fracciones' : 'Topic 2: Fractions';
+                if (model === 1) {
+                    // Suma de fracciones heterogéneas
+                    const pairs = [[1, 3, 1, 4], [2, 5, 1, 3], [3, 4, 1, 6], [2, 3, 1, 5], [3, 8, 1, 4]];
+                    const [n1, d1, n2, d2] = pairs[randInt(0, pairs.length - 1)];
+                    const num = n1 * d2 + n2 * d1;
+                    const den = d1 * d2;
+                    const g = gcd(num, den);
+                    const sNum = num / g, sDen = den / g;
+                    return {
+                        topic: topicLabel,
+                        text: isEs
+                            ? `Para preparar una receta se utilizan ${htmlFrac(n1, d1)} de kilogramo de harina de trigo y ${htmlFrac(n2, d2)} de kilogramo de harina de avena. ¿Qué fracción de kilogramo de harina se utilizó en total?`
+                            : `A recipe uses ${htmlFrac(n1, d1)} kilogram of wheat flour and ${htmlFrac(n2, d2)} kilogram of oat flour. What fraction of a kilogram of flour was used in total?`,
+                        answerVal: sNum / sDen,
+                        displayAns: sDen === 1 ? `${sNum}` : `${sNum}/${sDen}`
+                    };
+                } else if (model === 2) {
+                    // Multiplicación de fracciones (área)
+                    const opts = [[3, 4, 2, 5], [4, 5, 3, 8], [2, 3, 3, 7], [5, 6, 3, 10]];
+                    const [n1, d1, n2, d2] = opts[randInt(0, opts.length - 1)];
+                    const num = n1 * n2;
+                    const den = d1 * d2;
+                    const g = gcd(num, den);
+                    const sNum = num / g, sDen = den / g;
+                    return {
+                        topic: topicLabel,
+                        text: isEs
+                            ? `Un terreno rectangular mide ${htmlFrac(n1, d1)} de kilómetro de largo y ${htmlFrac(n2, d2)} de kilómetro de ancho. ¿Cuál es el área del terreno en kilómetros cuadrados?`
+                            : `A rectangular plot measures ${htmlFrac(n1, d1)} kilometer long and ${htmlFrac(n2, d2)} kilometer wide. What is the area of the plot in square kilometers?`,
+                        answerVal: sNum / sDen,
+                        displayAns: `${sNum}/${sDen}`
+                    };
+                } else if (model === 3) {
+                    // División de fracciones
+                    const n1 = randInt(3, 7);
+                    const d1 = 2;
+                    const d2 = randInt(4, 8);
+                    const num = n1 * d2;
+                    const den = d1;
+                    const g = gcd(num, den);
+                    const sNum = num / g, sDen = den / g;
+                    return {
+                        topic: topicLabel,
+                        text: isEs
+                            ? `Se dispone de ${htmlFrac(n1, d1)} litros de agua mineral para llenar vasos cuya capacidad es de ${htmlFrac(1, d2)} de litro cada uno. ¿Cuántos vasos completos se pueden llenar?`
+                            : `There are ${htmlFrac(n1, d1)} liters of mineral water available to fill glasses with a capacity of ${htmlFrac(1, d2)} liter each. How many full glasses can be filled?`,
+                        answerVal: sNum / sDen,
+                        displayAns: sDen === 1 ? `${sNum}` : `${sNum}/${sDen}`
+                    };
+                } else if (model === 4) {
+                    // Nuevo modelo: Suma y resta combinada de fracciones homogéneas
+                    const dens = [7, 8, 9, 10, 12];
+                    const d = dens[randInt(0, dens.length - 1)];
+                    const n1 = randInt(2, Math.floor(d / 2));
+                    const n2 = randInt(2, Math.floor(d / 2));
+                    const n3 = randInt(1, n1 + n2 - 1);
+                    const resNum = n1 + n2 - n3;
+                    const g = gcd(resNum, d);
+                    const sNum = resNum / g, sDen = d / g;
+                    return {
+                        topic: topicLabel,
+                        text: isEs
+                            ? `De un tanque de combustible, un vehículo consumió ${htmlFrac(n1, d)} de su capacidad en la mañana, luego se le añadieron ${htmlFrac(n2, d)} y en la tarde consumió ${htmlFrac(n3, d)}. Si el tanque estaba vacío al inicio, ¿qué fracción de su capacidad tiene al final del día?`
+                            : `In a fuel tank that started empty, ${htmlFrac(n1, d)} of its capacity was added in the morning, another ${htmlFrac(n2, d)} at noon, and ${htmlFrac(n3, d)} was consumed in the afternoon. What fraction of its capacity remains at the end of the day?`,
+                        answerVal: sNum / sDen,
+                        displayAns: sDen === 1 ? `${sNum}` : `${sNum}/${sDen}`
+                    };
+                } else {
+                    // Nuevo modelo: Resta de fracciones heterogéneas
+                    const subPairs = [[3, 4, 1, 3], [5, 6, 1, 4], [4, 5, 1, 2], [7, 8, 2, 5], [2, 3, 1, 6]];
+                    const [n1, d1, n2, d2] = subPairs[randInt(0, subPairs.length - 1)];
+                    const num = n1 * d2 - n2 * d1;
+                    const den = d1 * d2;
+                    const g = gcd(num, den);
+                    const sNum = num / g, sDen = den / g;
+                    return {
+                        topic: topicLabel,
+                        text: isEs
+                            ? `Una cinta métrica mide ${htmlFrac(n1, d1)} de metro. Si se corta un trozo de ${htmlFrac(n2, d2)} de metro para una manualidad, ¿qué fracción de metro de cinta queda disponible?`
+                            : `A ribbon measures ${htmlFrac(n1, d1)} meter long. If a piece measuring ${htmlFrac(n2, d2)} meter is cut off for a craft, what fraction of a meter of ribbon remains?`,
+                        answerVal: sNum / sDen,
+                        displayAns: sDen === 1 ? `${sNum}` : `${sNum}/${sDen}`
+                    };
+                }
+            }
+
+            // TEMA 3: Fracción de un número natural y fracción de una fracción (4 modelos)
+            if (topicIndex === 2) {
+                const model = preferredModel || randInt(1, 4);
+                const topicLabel = isEs ? 'Tema 3: Fracción de un Número' : 'Topic 3: Fraction of a Number';
+                if (model === 1) {
+                    const den = randInt(4, 9);
+                    const num = randInt(2, den - 1);
+                    const unit = randInt(15, 45) * 1000;
+                    const total = unit * den;
+                    const ans = unit * num;
+                    return {
+                        topic: topicLabel,
+                        text: isEs
+                            ? `De un presupuesto de <strong>$ ${fmtNum(total)}</strong> para equipos deportivos, se destinan los ${htmlFrac(num, den)} para balones. ¿Cuánto dinero se destinó para los balones?`
+                            : `Out of a budget of <strong>$ ${fmtNum(total)}</strong> for sports equipment, ${htmlFrac(num, den)} is allocated to balls. How much money was allocated to balls?`,
+                        answerVal: ans,
+                        displayAns: fmtNum(ans)
+                    };
+                } else if (model === 2) {
+                    const den = randInt(5, 8);
+                    const num = randInt(2, den - 1);
+                    const unit = randInt(30, 60);
+                    const total = unit * den;
+                    const remaining = total - (unit * num);
+                    return {
+                        topic: topicLabel,
+                        text: isEs
+                            ? `Un libro de aventuras tiene <strong>${total} páginas</strong>. Si Sofía ya leyó los ${htmlFrac(num, den)} del libro, ¿cuántas páginas le faltan por leer?`
+                            : `An adventure book has <strong>${total} pages</strong>. If Sofia has already read ${htmlFrac(num, den)} of the book, how many pages does she have left to read?`,
+                        answerVal: remaining,
+                        displayAns: `${remaining}`
+                    };
+                } else if (model === 3) {
+                    const den = randInt(4, 7);
+                    const num = randInt(2, den - 1);
+                    const unit = randInt(12, 25);
+                    const total = unit * den;
+                    const ans = unit * num;
+                    return {
+                        topic: topicLabel,
+                        text: isEs
+                            ? `En una competencia atlética de <strong>${fmtNum(total)} metros</strong>, un corredor se detiene a hidratarse cuando ha recorrido los ${htmlFrac(num, den)} de la distancia total. ¿Cuántos metros ha recorrido hasta ese punto?`
+                            : `In an athletic race of <strong>${fmtNum(total)} meters</strong>, a runner stops for water after completing ${htmlFrac(num, den)} of the total distance. How many meters has the runner covered up to that point?`,
+                        answerVal: ans,
+                        displayAns: fmtNum(ans)
+                    };
+                } else {
+                    // Nuevo modelo: Fracción de una fracción
+                    const combos = [[3, 4, 2, 5], [2, 3, 3, 4], [4, 5, 3, 8], [5, 6, 3, 5], [2, 5, 5, 6]];
+                    const [n1, d1, n2, d2] = combos[randInt(0, combos.length - 1)];
+                    const num = n1 * n2;
+                    const den = d1 * d2;
+                    const g = gcd(num, den);
+                    const sNum = num / g, sDen = den / g;
+                    return {
+                        topic: topicLabel,
+                        text: isEs
+                            ? `En una biblioteca escolar, ${htmlFrac(n1, d1)} de los libros pertenecen a literatura juvenil, y de ellos, ${htmlFrac(n2, d2)} son novelas de ciencia ficción. ¿Qué fracción del total de libros de la biblioteca corresponde a novelas de ciencia ficción?`
+                            : `In a school library, ${htmlFrac(n1, d1)} of the books belong to young adult literature, and of those, ${htmlFrac(n2, d2)} are science fiction novels. What fraction of the entire library consists of science fiction novels?`,
+                        answerVal: sNum / sDen,
+                        displayAns: sDen === 1 ? `${sNum}` : `${sNum}/${sDen}`
+                    };
+                }
+            }
+
+            // TEMA 4: Jerarquía en las operaciones (3 modelos)
+            const model = preferredModel || randInt(1, 3);
+            const topicLabel = isEs ? 'Tema 4: Jerarquía de Operaciones' : 'Topic 4: Order of Operations';
+            if (model === 1) {
+                const a = randInt(15, 40);
+                const b = randInt(3, 7);
+                const c = randInt(8, 15);
+                const d = randInt(2, 6);
+                const e = randInt(2, 5);
+                const f = e * randInt(3, 8);
+                const ans = a - b * (c - d) + (f / e);
+                return {
+                    topic: topicLabel,
+                    text: isEs
+                        ? `Calcula el valor numérico de la siguiente expresión:<br><br><strong>${a} − ${b} × (${c} − ${d}) + ${f} ÷ ${e}</strong>`
+                        : `Calculate the numerical value of the following expression:<br><br><strong>${a} − ${b} × (${c} − ${d}) + ${f} ÷ ${e}</strong>`,
+                    answerVal: ans,
+                    displayAns: `${ans}`
+                };
+            } else if (model === 2) {
+                const p1 = randInt(12, 25);
+                const p2 = randInt(3, 6);
+                const p3 = randInt(2, 5);
+                const mult = randInt(2, 4);
+                const sub = randInt(5, 15);
+                const finalAns = (p1 - p2 * p3) * mult - sub;
+                return {
+                    topic: topicLabel,
+                    text: isEs
+                        ? `Resuelve la siguiente operación combinada:<br><br><strong>(${p1} − ${p2} × ${p3}) × ${mult} − ${sub}</strong>`
+                        : `Solve the following combined operation:<br><br><strong>(${p1} − ${p2} × ${p3}) × ${mult} − ${sub}</strong>`,
+                    answerVal: finalAns,
+                    displayAns: `${finalAns}`
+                };
+            } else {
+                const ticket = randInt(8, 15) * 1000;
+                const snack = randInt(4, 7) * 1000;
+                const friends = randInt(3, 5);
+                const discount = randInt(3, 6) * 1000;
+                const total = friends * (ticket + snack) - discount;
+                return {
+                    topic: topicLabel,
+                    text: isEs
+                        ? `Un grupo de <strong>${friends} amigos</strong> va al cine. Cada entrada cuesta <strong>$ ${fmtNum(ticket)}</strong> y cada combo de palomitas cuesta <strong>$ ${fmtNum(snack)}</strong>. Si al pagar el total reciben un bono de descuento de <strong>$ ${fmtNum(discount)}</strong>, ¿cuánto dinero pagan en total?`
+                        : `A group of <strong>${friends} friends</strong> goes to the movies. Each ticket costs <strong>$ ${fmtNum(ticket)}</strong> and each popcorn combo costs <strong>$ ${fmtNum(snack)}</strong>. If they receive a total discount voucher of <strong>$ ${fmtNum(discount)}</strong> at checkout, how much money do they pay in total?`,
+                    answerVal: total,
+                    displayAns: fmtNum(total)
+                };
+            }
+        }
+
+        function renderSingleExercise(cardEl, topicIndex, displayIndex, preferredModel = null) {
+            const q = generateQuestionForTopic(topicIndex, preferredModel);
+            const canvasId = `sketch-quiz-${displayIndex}-${Date.now()}`;
+            cardEl.setAttribute('data-answer', q.answerVal);
+            cardEl.setAttribute('data-display-ans', q.displayAns);
+            cardEl.setAttribute('data-topic-idx', topicIndex);
+
+            cardEl.innerHTML = `
+                <div class="exercise-header">
+                    <span class="badge">${q.topic}</span>
+                    <span style="font-weight:700; font-size:0.9rem; color: var(--text-muted);">#${displayIndex + 1}</span>
+                </div>
+                <div class="problem-statement">${q.text}</div>
+                
+                <div class="drawing-pad-container">
+                    <div class="drawing-toolbar"></div>
+                    <canvas id="${canvasId}" class="sketch-pad" width="750" height="185"></canvas>
+                </div>
+
+                <div class="answer-row">
+                    <label>${t('yourAnswer')}</label>
+                    <input type="text" class="user-answer-input" placeholder="${t('answerPlaceholder')}" style="width: 170px;">
+                    <button type="button" class="btn check-ans-btn">${t('checkAnswer')}</button>
+                    <button type="button" class="btn btn-secondary single-new-btn">${t('newNumbers')}</button>
+                </div>
+                <div class="feedback"></div>
+            `;
+
+            const canvas = cardEl.querySelector('canvas');
+            if (canvas) initDrawingPad(canvas);
+
+            const input = cardEl.querySelector('.user-answer-input');
+            const feedback = cardEl.querySelector('.feedback');
+
+            const validate = () => {
+                const expected = parseFloat(cardEl.getAttribute('data-answer'));
+                const displayAns = cardEl.getAttribute('data-display-ans');
+                const userVal = parseMathInput(input.value);
+
+                if (isNaN(userVal)) {
+                    feedback.className = 'feedback incorrect';
+                    feedback.textContent = currentLang === 'es'
+                        ? '⚠️ Ingresa un número entero o una fracción válida (ejemplo: -12 o 3/4).'
+                        : '⚠️ Please enter a valid integer or fraction (example: -12 or 3/4).';
+                    return;
+                }
+
+                if (Math.abs(userVal - expected) < 0.0001) {
+                    feedback.className = 'feedback correct';
+                    feedback.textContent = t('correctMsg');
+                } else {
+                    feedback.className = 'feedback incorrect';
+                    feedback.textContent = `${t('incorrectMsg')} (${currentLang === 'es' ? 'Valor esperado:' : 'Expected value:'} ${displayAns})`;
+                }
+            };
+
+            cardEl.querySelector('.check-ans-btn').addEventListener('click', validate);
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') validate();
+            });
+
+            cardEl.querySelector('.single-new-btn').addEventListener('click', () => {
+                renderSingleExercise(cardEl, topicIndex, displayIndex, null);
+            });
+        }
+
+        function initQuiz() {
+            const container = document.getElementById('quiz-questions-container');
+            container.innerHTML = '';
+
+            // 10 ejercicios que garantizan presencia inmediata de todos los modelos solicitados
+            const quizPlan = [
+                { topic: 0, model: 4 },    // Enteros: suma y resta de más de 2 enteros
+                { topic: 0, model: null }, // Enteros: otro modelo aleatorio
+                { topic: 1, model: 4 },    // Fracciones: suma y resta homogéneas
+                { topic: 1, model: 5 },    // Fracciones: resta heterogéneas
+                { topic: 1, model: null }, // Fracciones: multiplicación, división o suma heterogénea
+                { topic: 2, model: 1 },    // Fracción de un número natural
+                { topic: 2, model: 4 },    // Fracción de una fracción
+                { topic: 3, model: 1 },    // Jerarquía de operaciones (expresión)
+                { topic: 3, model: 2 },    // Jerarquía de operaciones (paréntesis)
+                { topic: 3, model: 3 }     // Jerarquía de operaciones (situación aplicada)
+            ];
+
+            quizPlan.forEach((item, idx) => {
+                const card = document.createElement('div');
+                card.className = 'exercise-card';
+                container.appendChild(card);
+                renderSingleExercise(card, item.topic, idx, item.model);
+            });
+        }
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            updateUI();
+            updateLabIntegers();
+            updateLabFracNum();
+            updateLabHierarchy();
+            initQuiz();
+        });
+    </script>
+</body>
+</html>
